@@ -58,6 +58,8 @@ jobs:
             meson-python
             gsl
             cibuildwheel
+            pint
+            scipy
           post-cleanup: all
           generate-run-shell: false            
 

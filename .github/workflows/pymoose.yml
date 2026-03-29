@@ -55,6 +55,8 @@ jobs:
             ninja
             meson-python
             gsl
+            pint
+            scipy
           post-cleanup: all
           generate-run-shell: false
       - name: Display Python version

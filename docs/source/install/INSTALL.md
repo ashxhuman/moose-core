@@ -13,7 +13,7 @@ pip install pymoose
 If you are using MS Windows or want to keep things separate from your system Python, it is better to create a separate environment with conda/mamba/micromamba/miniforge. The channel `conda-forge` has these libraries for all three platforms. The commands are:
 
 ```bash
-conda create -n moose gsl hdf5 numpy vpython matplotlib -c conda-forge
+conda create -n moose gsl hdf5 numpy vpython matplotlib pint scipy -c conda-forge
 conda activate moose
 pip install pymoose
 ```
@@ -48,7 +48,7 @@ This wheel is built for:
 
 1. **Create a matching environment:**
    ```bash
-   conda create -n moose python=3.12 gsl=2.7 numpy vpython matplotlib -c conda-forge
+   conda create -n moose python=3.12 gsl=2.7 numpy vpython matplotlib pint scipy -c conda-forge
    ```
    
    > **Note**: Replace `conda` with `mamba` or `micromamba` if you prefer those tools for faster installation.
@@ -130,7 +130,7 @@ import moose
 
 **Missing dependencies:**
 - Use conda environment installation method
-- Install with: `conda create -n moose gsl hdf5 numpy -c conda-forge`
+- Install with: `conda create -n moose gsl hdf5 numpy pint scipy -c conda-forge`
 
 **Permission errors:**
 - Add `--user` flag: `pip install pymoose --user`

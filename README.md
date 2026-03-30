@@ -62,7 +62,7 @@ Installing released version from PyPI using `pip`
 This version is available for installation via `pip`. To install the latest release, run
 
 ```
-conda create -n moose python=3.13 gsl hdf5 numpy vpython matplotlib -c conda-forge
+conda create -n moose python=3.13 gsl hdf5 numpy vpython matplotlib pint scipy -c conda-forge
 conda activate moose
 ```
 ```

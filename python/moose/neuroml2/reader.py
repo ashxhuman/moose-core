@@ -244,15 +244,17 @@ def _outputDependsOn(ct, var):
     var_expr = {}
     for dyn in ct.Dynamics:
         for dv in dyn.DerivedVariable:
-            var_expr[dv.name] = pythonize_expr(dv.value)
+            var_expr[dv.name] = [pythonize_expr(dv.value)]
         for cdv in dyn.ConditionalDerivedVariable:
-            # Combine condition and value strings so both paths are covered
+            # Keep condition and value strings as separate expressions so
+            # each Case is parsed on its own instead of joined into one
+            # (often syntactically invalid) string.
             parts = []
             for case in cdv.Case:
                 if case.condition:
                     parts.append(pythonize_expr(case.condition))
                 parts.append(pythonize_expr(case.value))
-            var_expr[cdv.name] = " ".join(parts)
+            var_expr[cdv.name] = parts
 
     # Identify output variable names (those with an exposure)
     output_names = []
@@ -268,20 +270,21 @@ def _outputDependsOn(ct, var):
         if name in seen:
             return False
         seen.add(name)
-        expr = var_expr.get(name)
-        if expr is None:
+        exprs = var_expr.get(name)
+        if exprs is None:
             return name == var  # leaf: is it the target input?
-        if _isVarInExpr(expr, var):
-            return True
-        # Recurse into referenced intermediate variables
-        try:
-            parsed = ast.parse(expr)
-        except SyntaxError:
-            return False
-        for node in ast.walk(parsed):
-            if isinstance(node, ast.Name) and node.id in var_expr:
-                if _refs(node.id, seen):
-                    return True
+        for expr in exprs:
+            if _isVarInExpr(expr, var):
+                return True
+            # Recurse into referenced intermediate variables
+            try:
+                parsed = ast.parse(expr)
+            except SyntaxError:
+                return False
+            for node in ast.walk(parsed):
+                if isinstance(node, ast.Name) and node.id in var_expr:
+                    if _refs(node.id, seen):
+                        return True
         return False
 
     return any(_refs(name, set()) for name in output_names)

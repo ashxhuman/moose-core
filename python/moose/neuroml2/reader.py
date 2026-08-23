@@ -152,7 +152,8 @@ def array_eval_component(comp_type, req_vars, params={}):
     exec_str = "\n".join(exec_str)
     # print("*" * 80, "\n", exec_str, "\n", "*" * 80)
     logger_.debug(f'Excuting string "{exec_str}"\nlocals: {local_vars}')
-    exec(exec_str, np.__dict__, local_vars)
+    eval_globals = {**np.__dict__, "max": np.maximum, "min": np.minimum}
+    exec(exec_str, eval_globals, local_vars)
     return local_vars["return_vals"]
 
 

@@ -565,10 +565,10 @@ class NML2Reader(object):
         temperature attribute, return standard room temperature
 
         """
-        try:
-            return SI(self.network.temperature)
-        except AttributeError:
-            return SI("25")
+        temperature = getattr(self.network, "temperature", None)
+        if temperature is None:
+            return SI("25 degC")
+        return SI(temperature)
 
     def getCellInPopulation(self, pop_id, index):
         return self.cells_in_populations[pop_id][index]

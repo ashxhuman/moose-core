@@ -225,6 +225,16 @@ static const std::map<std::string, LookupGetter<unsigned int>> uintKeyGetters =
 
 };
 
+// Used in Interpol2D (e.g. HHGate2D::A/B 2-D lookup tables).
+static const std::map<std::string, LookupGetter<vector<double>>> vectorDoubleKeyGetters =
+    {
+        {"double",
+         [](auto& oid, auto& fname, auto& key) {
+             return nb::cast(
+                 ::LookupField<vector<double>, double>::get(oid, fname, key));
+         }},
+};
+
 LookupField::LookupField(const ObjId& oid, const Finfo* f)
     : oid_(oid), finfo_(f)
 {
@@ -264,6 +274,13 @@ nb::object LookupField::get(const nb::object& key)
         auto it = longKeyGetters.find(valueType_);
         if(it != longKeyGetters.end()) {
             return it->second(oid_, finfo_->name(), nb::cast<long>(key));
+        }
+    }
+    else if(keyType_ == "vector<double>") {
+        auto it = vectorDoubleKeyGetters.find(valueType_);
+        if(it != vectorDoubleKeyGetters.end()) {
+            return it->second(oid_, finfo_->name(),
+                              nb::cast<vector<double>>(key));
         }
     }
 

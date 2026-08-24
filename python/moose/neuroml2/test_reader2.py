@@ -57,12 +57,14 @@ from moose.neuroml2.reader import NML2Reader
 
 class TestPassiveCell(unittest.TestCase):
     def setUp(self):
-        if '/library' in moose.le():
+        if moose.exists('/library'):
             moose.delete('/library')
+        if moose.exists('/model'):
+            moose.delete('/model')
         self.reader = NML2Reader(verbose=True)
         self.lib = moose.Neutral('/library')
         self.filename = os.path.realpath('test_files/passiveCell.nml')
-        self.reader.read(self.filename)
+        self.reader.read(self.filename, '/model')
         for ncell in self.reader.nml_cells_to_moose:
             #if isinstance((self.reader.nml_cells_to_moose[ncell]).type,moose.Neuron):
             if self.reader.nml_cells_to_moose[ncell].isA("Neuron"):

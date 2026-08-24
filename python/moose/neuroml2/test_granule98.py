@@ -72,7 +72,7 @@ if __name__ == "__main__":
     do_plot = True
     reader = NML2Reader(verbose=True)
     filename = os.path.join(modeldir, "GranuleCell.net.nml")
-    reader.read(filename)
+    reader.read(filename, "/model")
     pop_id = reader.doc.networks[0].populations[0].id
     soma = reader.getComp(pop_id, cellIndex=0, segId=0)
     data = moose.Neutral("/data")
@@ -83,7 +83,7 @@ if __name__ == "__main__":
     vm = moose.Table(f"{data.path}/Vm")
     moose.connect(vm, "requestOut", soma, "getVm")
     catab = None
-    for el in moose.wildcardFind("/model/##[TYPE=CaConc]"):
+    for el in moose.wildcardFind(f"{reader.model.path}/##[TYPE=CaConc]"):
         capool = moose.element(f"{soma.path}/{el.name}")
         catab = moose.Table(f"{data.path}/{capool.name}")
         moose.connect(catab, "requestOut", capool, "getCa")

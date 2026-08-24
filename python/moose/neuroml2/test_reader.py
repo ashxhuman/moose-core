@@ -60,17 +60,21 @@ from moose.neuroml2.reader import NML2Reader
 
 class TestFullCell(unittest.TestCase):
     def setUp(self):
-        if '/library' in moose.le():
+        if moose.exists('/library'):
             moose.delete('/library')
+        if moose.exists('/model'):
+            moose.delete('/model')
         self.reader = NML2Reader(verbose=True)
 
         self.lib = moose.Neutral('/library')
         self.filename = os.path.realpath('test_files/NML2_FullCell.nml')
-        self.reader.read(self.filename)
+        self.reader.read(self.filename, '/model')
         for ncell in self.reader.nml_cells_to_moose:
             if self.reader.nml_cells_to_moose[ncell].isA("Neuron"):
                 self.ncell = self.reader.nml_cells_to_moose[ncell]
                 break
+        # NML2_FullCell.nml has no <network>, so the cell exists only
+        # as a prototype under /library.
         self.mcell = moose.element('/library/SpikingCell')
         self.soma = moose.element(self.mcell.path + '/Soma')
         self.dendrite1 = moose.element(self.mcell.path + '/Dendrite1')

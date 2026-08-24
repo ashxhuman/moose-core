@@ -54,7 +54,7 @@ def run(nogui):
 
     filename = 'test_files/passiveCell.nml'
     print('Loading: %s'%filename)
-    reader.read(filename)
+    reader.read(filename, '/model')
 
 
     msoma = reader.getComp(reader.doc.networks[0].populations[0].id,0,0)

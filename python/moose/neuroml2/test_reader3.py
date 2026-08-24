@@ -43,7 +43,7 @@
 
 import unittest
 import moose
-from reader import NML2Reader
+from moose.neuroml2.reader import NML2Reader
 import neuroml as nml
 import os
 import numpy as np
@@ -59,17 +59,19 @@ Vm at 0.0533s is -0.03725 (at 1 tau time)
 
 class TestPassiveCell(unittest.TestCase):
     def setUp(self):
-        if '/library' in moose.le():
+        if moose.exists('/library'):
             moose.delete('/library')
+        if moose.exists('/model'):
+            moose.delete('/model')
+        if moose.exists('/vmtab'):
+            moose.delete('/vmtab')
         self.reader = NML2Reader(verbose=True)
         self.lib = moose.Neutral('/library')
         self.filename = os.path.realpath('test_files/passiveCell.nml')
-        self.reader.read(self.filename)
-        self.mcell = moose.element('/library/pop0/0')
-        self.soma = moose.element(self.mcell.path + '/soma')
-        if not moose.exists('vmtab'):
-            self.vmtab = moose.Table('vmtab')
-            moose.connect(self.vmtab, 'requestOut', self.soma, 'getVm')
+        self.reader.read(self.filename, '/model')
+        self.soma = moose.element('/model/net1/pop0/0/soma')
+        self.vmtab = moose.Table('/vmtab')
+        moose.connect(self.vmtab, 'requestOut', self.soma, 'getVm')
         moose.reinit()
         moose.start(300e-3)
         self.t = np.linspace(0, 300e-3, len(self.vmtab.vector))

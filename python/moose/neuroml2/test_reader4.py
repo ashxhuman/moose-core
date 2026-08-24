@@ -49,7 +49,7 @@ import unittest
 import numpy as np
 import moose
 import neuroml as nml
-from reader import NML2Reader
+from moose.neuroml2.reader import NML2Reader
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -57,18 +57,20 @@ from scipy.signal import find_peaks
 
 class TestFullCell(unittest.TestCase):
     def setUp(self):
-        if '/library' in moose.le():
+        if moose.exists('/library'):
             moose.delete('/library')
+        if moose.exists('/model'):
+            moose.delete('/model')
+        if moose.exists('/vmtab'):
+            moose.delete('/vmtab')
         self.reader = NML2Reader(verbose=True)
 
         self.lib = moose.Neutral('/library')
         self.filename = os.path.realpath('test_files/NML2_SingleCompHHCell.nml')
-        self.reader.read(self.filename)
-        self.soma = moose.element('library/hhpop/0/soma')
-
-        if not moose.exists('vmtab'):
-            self.vmtab = moose.Table('vmtab')
-            moose.connect(self.vmtab, 'requestOut', self.soma, 'getVm')
+        self.reader.read(self.filename, '/model')
+        self.soma = moose.element('/model/net1/hhpop/0/soma')
+        self.vmtab = moose.Table('/vmtab')
+        moose.connect(self.vmtab, 'requestOut', self.soma, 'getVm')
         moose.reinit()
         moose.start(300e-3)
         self.t = np.linspace(0, 300e-3, len(self.vmtab.vector))
